@@ -1,7 +1,7 @@
 package client
 
 import (
-	"git.tyy.com/llm-PhotoMagic/go-common/utils/redis"
+	"gitea.com/llm-PhotoMagic/go-common/utils/redis"
 	"time"
 )
 

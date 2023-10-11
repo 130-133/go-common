@@ -12,7 +12,7 @@ import (
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
 
-	"git.tyy.com/llm-PhotoMagic/go-common/utils/help"
+	"gitea.com/llm-PhotoMagic/go-common/utils/help"
 )
 
 func (r *MRedis) PushList(key string, data interface{}) *redis.IntCmd {

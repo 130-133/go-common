@@ -9,7 +9,7 @@ import (
 
 	"github.com/streadway/amqp"
 
-	"git.tyy.com/llm-PhotoMagic/go-common/utils/logger"
+	"gitea.com/llm-PhotoMagic/go-common/utils/logger"
 )
 
 type Option func(*RabbitMQ)

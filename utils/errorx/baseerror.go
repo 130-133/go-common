@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"git.tyy.com/llm-PhotoMagic/go-common/utils/help"
+	"gitea.com/llm-PhotoMagic/go-common/utils/help"
 )
 
 var global *tyyError

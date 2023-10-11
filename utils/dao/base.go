@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 
-	"git.tyy.com/llm-PhotoMagic/go-common/utils/help"
+	"gitea.com/llm-PhotoMagic/go-common/utils/help"
 )
 
 type IBaseDao interface {

@@ -2,7 +2,7 @@ package crontab
 
 import (
 	"fmt"
-	"git.tyy.com/llm-PhotoMagic/go-common/utils/help"
+	"gitea.com/llm-PhotoMagic/go-common/utils/help"
 	"github.com/robfig/cron/v3"
 	"go.uber.org/atomic"
 	"sync"

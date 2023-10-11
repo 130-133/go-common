@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"git.tyy.com/llm-PhotoMagic/go-common/utils/encrypt"
+	"gitea.com/llm-PhotoMagic/go-common/utils/encrypt"
 	"github.com/tidwall/gjson"
 )
 

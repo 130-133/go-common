@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"git.tyy.com/llm-PhotoMagic/go-common/utils/redis"
+	"gitea.com/llm-PhotoMagic/go-common/utils/redis"
 )
 
 func TestBaseQueue_Lock(t *testing.T) {

@@ -5,8 +5,8 @@ import (
 
 	red "github.com/go-redis/redis"
 
-	"git.tyy.com/llm-PhotoMagic/go-common/utils/errorx"
-	"git.tyy.com/llm-PhotoMagic/go-common/utils/logger"
+	"gitea.com/llm-PhotoMagic/go-common/utils/errorx"
+	"gitea.com/llm-PhotoMagic/go-common/utils/logger"
 )
 
 type Option func(*Conf)

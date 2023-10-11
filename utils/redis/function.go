@@ -8,7 +8,7 @@ import (
 	red "github.com/go-redis/redis"
 	"github.com/tidwall/gjson"
 
-	"git.tyy.com/llm-PhotoMagic/go-common/utils/help"
+	"gitea.com/llm-PhotoMagic/go-common/utils/help"
 )
 
 type SetFunc func() ([]byte, error)

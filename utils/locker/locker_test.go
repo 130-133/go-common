@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"git.tyy.com/llm-PhotoMagic/go-common/utils/locker/client"
-	"git.tyy.com/llm-PhotoMagic/go-common/utils/redis"
+	"gitea.com/llm-PhotoMagic/go-common/utils/locker/client"
+	"gitea.com/llm-PhotoMagic/go-common/utils/redis"
 )
 
 func TestNewLocker(t *testing.T) {

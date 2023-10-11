@@ -12,8 +12,8 @@ import (
 
 	"github.com/golang-jwt/jwt/v4"
 
-	"git.tyy.com/llm-PhotoMagic/go-common/utils/encrypt"
-	"git.tyy.com/llm-PhotoMagic/go-common/utils/request"
+	"gitea.com/llm-PhotoMagic/go-common/utils/encrypt"
+	"gitea.com/llm-PhotoMagic/go-common/utils/request"
 )
 
 const (

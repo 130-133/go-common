@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"git.tyy.com/llm-PhotoMagic/go-common/utils/context/header"
+	"gitea.com/llm-PhotoMagic/go-common/utils/context/header"
 )
 
 // UserAgentFun 提取头部信息
