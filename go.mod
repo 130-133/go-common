@@ -1,4 +1,4 @@
-module git.tyy.com/llm-PhotoMagic/go-common
+module  gitea.com/llm-PhotoMagic/go-common
 
 go 1.18
 
