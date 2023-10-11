@@ -6,7 +6,7 @@ import (
 
 	"google.golang.org/grpc/metadata"
 
-	"llm-PhotoMagic/go-common/utils/context/header"
+	"git.tyy.com/llm-PhotoMagic/go-common/utils/context/header"
 )
 
 func ExtractMiniCode(ctx context.Context) header.MiniCode {

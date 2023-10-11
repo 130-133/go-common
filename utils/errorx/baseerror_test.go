@@ -9,7 +9,7 @@ import (
 )
 
 func TestNewError(t *testing.T) {
-	Init(UnionPayRPC)
+	Init(Admin)
 	e := NewSystemError("错 错:错", 01)
 	t.Log(e)
 	trans := func(err error) error {
@@ -21,7 +21,7 @@ func TestNewError(t *testing.T) {
 }
 
 func TestNewCodeError(t *testing.T) {
-	Init(UnionPayRPC, WithErrMsgMap(map[int]string{
+	Init(Admin, WithErrMsgMap(map[int]string{
 		1: "this is test",
 	}))
 	e := NewSystemCodeError(2)
@@ -45,7 +45,7 @@ func TestParseErr(t *testing.T) {
 }
 
 func TestI18n_Msg(t *testing.T) {
-	Init(UnionPayRPC, WithLocalize(map[int]*i18n.Message{
+	Init(Admin, WithLocalize(map[int]*i18n.Message{
 		1: {ID: "test", Other: "测试"},
 	}, []string{"./i18n/zh-CN.toml"}, "zh-CN"), WithUnknownMsg("Known Error"))
 

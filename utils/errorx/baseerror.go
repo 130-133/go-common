@@ -15,28 +15,28 @@ import (
 	"git.tyy.com/llm-PhotoMagic/go-common/utils/help"
 )
 
-var global *miniError
+var global *tyyError
 
-type miniErrorResponse struct {
+type tyyErrorResponse struct {
 	Code int    `json:"code"`
 	Msg  string `json:"message"`
 }
 
-type miniError struct {
+type tyyError struct {
 	SystemCode AppCode
 	ErrMsgMap  map[int]string
 	UnknownMsg string
 	I18n       *I18n
 }
 
-type ErrOpt func(*miniError)
+type ErrOpt func(*tyyError)
 
-func (o ErrOpt) Apply(e *miniError) {
+func (o ErrOpt) Apply(e *tyyError) {
 	o(e)
 }
 
 func Init(appCode AppCode, opts ...ErrOpt) {
-	global = &miniError{
+	global = &tyyError{
 		SystemCode: appCode,
 		UnknownMsg: "服务器开小差了，请稍后再试",
 	}
@@ -47,14 +47,14 @@ func Init(appCode AppCode, opts ...ErrOpt) {
 
 // WithErrMsgMap 设置全局映射错误码信息
 func WithErrMsgMap(data map[int]string) ErrOpt {
-	return func(e *miniError) {
+	return func(e *tyyError) {
 		e.ErrMsgMap = data
 	}
 }
 
 // WithLocalize 设置国际化
 func WithLocalize(data map[int]*i18n.Message, i18nFile []string, lang string) ErrOpt {
-	return func(e *miniError) {
+	return func(e *tyyError) {
 		e.I18n = NewI18n(data, i18nFile, lang)
 		e.I18n.UnknownMsg = e.UnknownMsg
 	}
@@ -62,7 +62,7 @@ func WithLocalize(data map[int]*i18n.Message, i18nFile []string, lang string) Er
 
 // WithUnknownMsg 设置默认未定义错误信息
 func WithUnknownMsg(msg string) ErrOpt {
-	return func(e *miniError) {
+	return func(e *tyyError) {
 		e.UnknownMsg = msg
 		if e.I18n != nil {
 			e.I18n.UnknownMsg = msg
@@ -70,7 +70,7 @@ func WithUnknownMsg(msg string) ErrOpt {
 	}
 }
 
-func (e miniError) GetMsg(code int) string {
+func (e tyyError) GetMsg(code int) string {
 	if e.I18n != nil {
 		return e.I18n.Msg(code)
 	}
@@ -81,14 +81,14 @@ func (e miniError) GetMsg(code int) string {
 	return msg
 }
 
-type MiniCodeError struct {
+type TyyCodeError struct {
 	GrpcStatus  *status.Status //grpc状态码
 	ErrMessage  string         //错误信息
 	ErrCategory CategoryCode   //分类
 	ErrCode     int            //7位错误码
 }
 
-func GetGlobal() *miniError {
+func GetGlobal() *tyyError {
 	if global == nil {
 		Init(99)
 	}
@@ -105,7 +105,7 @@ func NewError(category CategoryCode, code int, msg string) error {
 		code, _ = strconv.Atoi(codeStr)
 	}
 	statusCode := ToStatusCode(category)
-	return &MiniCodeError{
+	return &TyyCodeError{
 		GrpcStatus:  status.New(statusCode, formatCodeMessage(msg, code)),
 		ErrMessage:  msg,
 		ErrCategory: category,
@@ -163,38 +163,38 @@ func NewRpcError(msg string, code int) error {
 }
 
 // Error 默认输出message带code
-func (e *MiniCodeError) Error() string {
+func (e *TyyCodeError) Error() string {
 	return e.ErrMessage
 }
 
-func (e *MiniCodeError) GRPCStatus() *status.Status {
+func (e *TyyCodeError) GRPCStatus() *status.Status {
 	return e.GrpcStatus
 }
 
 // Message 返回带code message
-func (e *MiniCodeError) Message() string {
+func (e *TyyCodeError) Message() string {
 	return e.GRPCStatus().Message()
 }
 
 // Code 返回自定义错误码
-func (e *MiniCodeError) Code() int {
+func (e *TyyCodeError) Code() int {
 	return e.ErrCode
 }
 
-func (e *MiniCodeError) Category() CategoryCode {
+func (e *TyyCodeError) Category() CategoryCode {
 	return e.ErrCategory
 }
 
 // Data 返回http结构
-func (e *MiniCodeError) Data() *miniErrorResponse {
-	return &miniErrorResponse{
+func (e *TyyCodeError) Data() *tyyErrorResponse {
+	return &tyyErrorResponse{
 		Code: e.Code(),
 		Msg:  e.Error(),
 	}
 }
 
 // IsCode 判断两个错误是否一致（只针对code一致）
-func (e *MiniCodeError) IsCode(err error) bool {
+func (e *TyyCodeError) IsCode(err error) bool {
 	errA := ParseErr(err)
 	if e.Code() == errA.Code() {
 		return true
@@ -203,7 +203,7 @@ func (e *MiniCodeError) IsCode(err error) bool {
 }
 
 // IsErr 判断两个错误是否一致 （针对code和message一致）
-func (e *MiniCodeError) IsErr(err error) bool {
+func (e *TyyCodeError) IsErr(err error) bool {
 	errA := ParseErr(err)
 	if e.Code() == errA.Code() && e.Message() == errA.Message() {
 		return true
@@ -237,11 +237,11 @@ func ToStatusCode(category CategoryCode) codes.Code {
 }
 
 // ParseErr 解析GRPC返回错误
-func ParseErr(err error) *MiniCodeError {
+func ParseErr(err error) *TyyCodeError {
 	if err == nil {
 		return nil
 	}
-	if result, ok := err.(*MiniCodeError); ok {
+	if result, ok := err.(*TyyCodeError); ok {
 		return result
 	}
 	msg := err.Error()
@@ -251,7 +251,7 @@ func ParseErr(err error) *MiniCodeError {
 		regex, _ = regexp.Compile(`desc = ([\s\S]*) code:(\d+)$`)
 	}
 	match := regex.FindStringSubmatch(msg)
-	result := NewSystemError(msg, 0).(*MiniCodeError)
+	result := NewSystemError(msg, 0).(*TyyCodeError)
 	if len(match) != 3 {
 		return result
 	}
@@ -268,31 +268,31 @@ func ParseErr(err error) *MiniCodeError {
 	if cErr != nil {
 		return nil
 	}
-	return NewError(CategoryCode(categoryCode), errCode, sliceMsg).(*MiniCodeError)
+	return NewError(CategoryCode(categoryCode), errCode, sliceMsg).(*TyyCodeError)
 }
 
 // HttpxHandler gozero的http异常处理
 func HttpxHandler(err error) (int, interface{}) {
 	switch e := err.(type) {
-	case *MiniCodeError:
+	case *TyyCodeError:
 		return http.StatusOK, HttpxErrMsgShow(e)
 	default:
-		miniErr := ParseErr(err)
-		if miniErr != nil {
-			return http.StatusOK, HttpxErrMsgShow(miniErr)
+		tyyErr := ParseErr(err)
+		if tyyErr != nil {
+			return http.StatusOK, HttpxErrMsgShow(tyyErr)
 		}
 	}
 
 	fmt.Errorf("SetErrorHandler Err:%s Stack:%s", err.Error(), debug.Stack())
 
-	initErr := NewSystemError(global.GetMsg(-1), 0).(*MiniCodeError)
+	initErr := NewSystemError(global.GetMsg(-1), 0).(*TyyCodeError)
 	if global.I18n != nil {
-		initErr = NewSystemError(global.I18n.Msg(-1), 0).(*MiniCodeError)
+		initErr = NewSystemError(global.I18n.Msg(-1), 0).(*TyyCodeError)
 	}
 	return http.StatusInternalServerError, initErr.Data()
 }
 
-func HttpxErrMsgShow(err *MiniCodeError) *miniErrorResponse {
+func HttpxErrMsgShow(err *TyyCodeError) *tyyErrorResponse {
 	result := err.Data()
 	codeStr := help.ToString(err.Code())
 	if len(codeStr) != 7 {

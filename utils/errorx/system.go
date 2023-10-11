@@ -19,23 +19,6 @@ type AppCode int
 
 //应用标识(2位数字)
 const (
-	Common          AppCode = 10
-	Admin           AppCode = 11
-	UserBehaviorAPI AppCode = 14
-	UserBehaviorRPC AppCode = 15
-	CubeAPI         AppCode = 16
-	CubeRPC         AppCode = 17
-	AccountAPI      AppCode = 18
-	AccountRPC      AppCode = 19
-	UnionPayAPI     AppCode = 20
-	UnionPayRPC     AppCode = 21
-	NotificationAPI AppCode = 22
-	NotificationRPC AppCode = 23
-	SiriusServer    AppCode = 24
-	SiriusQueue     AppCode = 25
-	SiriusSchedule  AppCode = 26
-	OrderAPI        AppCode = 27
-	OrderRPC        AppCode = 28
-	CommunityAPI    AppCode = 29
-	CommunityRPC    AppCode = 30
+	Common AppCode = 10
+	Admin  AppCode = 11
 )
