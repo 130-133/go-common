@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"llm-PhotoMagic/go-common/utils/help"
+	"gitea.com/llm-PhotoMagic/go-common/utils/help"
 	"strconv"
 	"strings"
 )

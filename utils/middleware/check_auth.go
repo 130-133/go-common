@@ -95,13 +95,13 @@ func (a AuthKeys) GetCheckNormalFun(next http.HandlerFunc, expire time.Duration)
 func (a AuthKeys) GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
-			uid string
+			uin string
 			err error
 		)
 		//先获取head中是否存在Authorization
 		hAuthorization := r.Header.Get("Authorization")
 		if hAuthorization != "" {
-			uid, err = authorizationFun(a, hAuthorization)
+			uin, err = authorizationFun(a, hAuthorization)
 		}
 		if hAuthorization == "" || err != nil {
 			data := errorx.NewSystemError("登录状态已失效、请重新登录", 0).(*errorx.TyyCodeError).Data()
@@ -112,8 +112,8 @@ func (a AuthKeys) GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "Uid", uid)
-		ctx, _ = help.SetUinToMetadataCtx(ctx, uid)
+		ctx := context.WithValue(r.Context(), "Uin", uin)
+		ctx, _ = help.SetUinToMetadataCtx(ctx, uin)
 
 		next(w, r.WithContext(ctx))
 	}
@@ -158,7 +158,7 @@ func (a AuthKeys) CheckAuthExpire(ctx context.Context, duration time.Duration) b
 //}
 
 // header 鉴权
-func authorizationFun(authKeys AuthKeys, authorization string) (uid string, err error) {
+func authorizationFun(authKeys AuthKeys, authorization string) (uin string, err error) {
 	authSplit := strings.SplitN(authorization, " ", 2)
 	if len(authSplit) != 2 {
 		err = errors.New("鉴权参数无效")
@@ -176,7 +176,7 @@ func authorizationFun(authKeys AuthKeys, authorization string) (uid string, err 
 			return
 		}
 		data := en.Data()
-		uid, _ = data["uid"].(string)
+		uin, _ = data["uin"].(string)
 	default:
 		err = errors.New("鉴权失败")
 		return
