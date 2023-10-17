@@ -102,7 +102,7 @@ func GetPagingParam(pageIndex int64, pageSize int64) (limit int64, offset int64)
 	return
 }
 
-func GetRandstring(length int) string {
+func GetRandString(length int) string {
 	if length < 1 {
 		return ""
 	}

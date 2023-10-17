@@ -19,6 +19,7 @@ type AppCode int
 
 //应用标识(2位数字)
 const (
-	Common AppCode = 10
-	Admin  AppCode = 11
+	Common  AppCode = 10
+	Admin   AppCode = 11
+	OpenAPI AppCode = 12
 )

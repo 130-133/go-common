@@ -43,7 +43,8 @@ func (e *Sha256Encrypt) sha256(str string, options ...CommonOpt) string {
 	for _, o := range options {
 		o.Apply(&e.opt)
 	}
-	newSig := sha256.New().Sum([]byte(str))
+	//newSig := sha256.New().Sum([]byte(str))
+	newSig := sha256.Sum256([]byte(str))
 	newArr := fmt.Sprintf("%x", newSig)
 	return turnCase(newArr, e.opt.signCase)
 }
