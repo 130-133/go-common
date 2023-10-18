@@ -2,7 +2,11 @@
 
 go公共代码仓库
 
-[toc]
+当前Git服务器没有域名，暂时将包命名为gitea.com/llm-PhotoMagic/go-common
+安装该包需修改本地git配置 
+
+>git config --global url."http://123.207.3.127/".insteadof "https://gitea.com/"  
+>   go env -w GOPRIVATE=gitea.com
 
 # utils
 ## context
