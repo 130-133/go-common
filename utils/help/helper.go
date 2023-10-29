@@ -41,35 +41,66 @@ func GetUinFromCtx(ctx context.Context) (uin string, err error) {
 	return
 }
 
-func SetUinToMetadataCtx(ctx context.Context, uin string) (rsCtx context.Context, err error) {
-	if uin == "" {
-		err = errors.New("uin is nil")
+func SetIDNameToMetadataCtx(ctx context.Context, id, name string) (rsCtx context.Context, err error) {
+	if id == "" || name == "" {
+		err = errors.New("id or name is nil")
 		return
 	}
 
-	md := metadata.Pairs("rUin", uin)
+	md := metadata.Pairs("rID", id, "rName", name)
 	rsCtx = metadata.NewOutgoingContext(ctx, md)
 
 	return
 }
 
-// GetRpcUinFromCtx 从metadata中获取Uin (需要上层ctx透传)
-func GetRpcUinFromCtx(ctx context.Context) (uin string, err error) {
+func GetIDNameFromCtx(ctx context.Context) (id, name string, err error) {
+	md, ok := metadata.FromOutgoingContext(ctx)
+	if !ok {
+		err = errors.New("metadata FromOutgoingContext is false")
+		return
+	}
+
+	idArr := md.Get("rID")
+	if len(idArr) <= 0 {
+		err = errors.New("idArr is nil")
+		return
+	}
+	id = idArr[0]
+	if id == "" {
+		err = errors.New("ID is nil")
+		return
+	}
+
+	NameArr := md.Get("rName")
+	if len(NameArr) <= 0 {
+		err = errors.New("nameArr is nil")
+		return
+	}
+	name = NameArr[0]
+	if name == "" {
+		err = errors.New("name is nil")
+		return
+	}
+
+	return
+}
+
+// GetRpcIDFromCtx 从metadata中获取Uin (需要上层ctx透传)
+func GetRpcIDFromCtx(ctx context.Context) (id string, err error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		err = errors.New("metadata fromIncomingContext is false")
 		return
 	}
 
-	uinArr := md.Get("rUin")
-	if len(uinArr) <= 0 {
-		err = errors.New("uinArr is nil")
+	idArr := md.Get("rID")
+	if len(idArr) <= 0 {
+		err = errors.New("idArr is nil")
 		return
 	}
-
-	uin = uinArr[0]
-	if uin == "" {
-		err = errors.New("uin is nil")
+	id = idArr[0]
+	if id == "" {
+		err = errors.New("ID is nil")
 		return
 	}
 
