@@ -92,7 +92,7 @@ func (tm *TokenManager) GetTicket(ctx context.Context, token AccessToken) (ticke
 			host,
 			"/cgi-bin/ticket/getticket",
 			map[string]interface{}{
-				"type":         "jsapi_ticket",
+				"type":         "jsapi",
 				"access_token": string(token),
 			})
 		if err := resp.GetError(); err != nil {
