@@ -6,7 +6,6 @@ import (
 	"gitea.com/llm-PhotoMagic/go-common/utils/redis"
 	"gitea.com/llm-PhotoMagic/go-common/utils/request"
 	red "github.com/go-redis/redis"
-	"github.com/tidwall/gjson"
 	"time"
 )
 
@@ -17,6 +16,17 @@ type TokenManager struct {
 	AppId  string
 	Secret string
 	Redis  *redis.MRedis
+}
+
+type accessTokenResp struct {
+	AccessToken string `json:"access_token"`
+	ExpiresIn   int    `json:"expires_in"`
+}
+type jsTicketResp struct {
+	ErrCode   int64  `json:"errcode"`
+	ErrMsg    string `json:"errmsg"`
+	Ticket    string `json:"ticket"`
+	ExpiresIn int    `json:"expires_in"`
 }
 
 func NewTokenManager(appId, secret string, rds *redis.MRedis) *TokenManager {
@@ -55,10 +65,15 @@ func (tm *TokenManager) GetToken(ctx context.Context) (token AccessToken, err er
 		if err := resp.GetError(); err != nil {
 			return token, err
 		}
-		data := gjson.GetBytes(resp.GetBody(), "access_token").Raw
-		token = AccessToken(data)
-		if data != "" {
-			tm.Redis.Set(key, data, time.Second*7000)
+		//data := gjson.GetBytes(resp.GetBody(), "access_token").Raw
+		at := &accessTokenResp{}
+		err = resp.GetJson(at)
+		if err != nil {
+			return "", err
+		}
+		token = AccessToken(at.AccessToken)
+		if at.AccessToken != "" {
+			tm.Redis.Set(key, at.AccessToken, time.Second*7000)
 			return token, nil
 		} else {
 			return
@@ -98,10 +113,15 @@ func (tm *TokenManager) GetTicket(ctx context.Context, token AccessToken) (ticke
 		if err := resp.GetError(); err != nil {
 			return "", err
 		}
-		data := gjson.GetBytes(resp.GetBody(), "ticket").Raw
-		ticket = JSTicket(data)
-		if data != "" {
-			tm.Redis.Set(key, data, time.Second*7000)
+		//data := gjson.GetBytes(resp.GetBody(), "ticket").Raw
+		tk := &jsTicketResp{}
+		err = resp.GetJson(tk)
+		if err != nil {
+			return "", err
+		}
+		ticket = JSTicket(tk.Ticket)
+		if tk.Ticket != "" {
+			tm.Redis.Set(key, tk.Ticket, time.Second*7000)
 			return ticket, nil
 		} else {
 			return
