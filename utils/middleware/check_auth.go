@@ -107,7 +107,7 @@ func (a AuthKeys) GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc {
 		if hAuthorization == "" || err != nil {
 			data := errorx.NewSystemError("登录状态已失效、请重新登录", 0).(*errorx.TyyCodeError).Data()
 			body, _ := json.Marshal(data)
-			w.Header().Set(httpx.ContentType, httpx.ApplicationJson)
+			w.Header().Set(httpx.ContentType, httpx.JsonContentType)
 			w.WriteHeader(http.StatusUnauthorized)
 			w.Write(body)
 			return
@@ -188,7 +188,7 @@ func authorizationFun(authKeys AuthKeys, authorization string) (id, name string,
 func (a AuthKeys) errOutput(w http.ResponseWriter) {
 	data := errorx.NewSystemError("登录状态已失效、请重新登录", 0).(*errorx.TyyCodeError).Data()
 	body, _ := json.Marshal(data)
-	w.Header().Set(httpx.ContentType, httpx.ApplicationJson)
+	w.Header().Set(httpx.ContentType, httpx.JsonContentType)
 	w.WriteHeader(http.StatusUnauthorized)
 	w.Write(body)
 }

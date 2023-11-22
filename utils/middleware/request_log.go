@@ -27,6 +27,7 @@ func HttpLog(l *logger.MLogger) IHttpLog {
 		ignore: []string{
 			"/ping",
 			"/checkhealth",
+			"login",
 		},
 	}
 }
