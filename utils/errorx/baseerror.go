@@ -17,7 +17,7 @@ import (
 
 var global *tyyError
 
-type tyyErrorResponse struct {
+type TyyErrorResponse struct {
 	Code int    `json:"code"`
 	Msg  string `json:"message"`
 }
@@ -186,8 +186,8 @@ func (e *TyyCodeError) Category() CategoryCode {
 }
 
 // Data 返回http结构
-func (e *TyyCodeError) Data() *tyyErrorResponse {
-	return &tyyErrorResponse{
+func (e *TyyCodeError) Data() *TyyErrorResponse {
+	return &TyyErrorResponse{
 		Code: e.Code(),
 		Msg:  e.Error(),
 	}
@@ -292,7 +292,7 @@ func HttpxHandler(err error) (int, interface{}) {
 	return http.StatusInternalServerError, initErr.Data()
 }
 
-func HttpxErrMsgShow(err *TyyCodeError) *tyyErrorResponse {
+func HttpxErrMsgShow(err *TyyCodeError) *TyyErrorResponse {
 	result := err.Data()
 	codeStr := help.ToString(err.Code())
 	if len(codeStr) != 7 {

@@ -1,7 +1,5 @@
 package errorx
 
-// https://mini1.feishu.cn/docx/doxcn6SZIPJhNqovp2GAtrFktkg
-
 type CategoryCode int
 
 const (
@@ -19,7 +17,9 @@ type AppCode int
 
 //应用标识(2位数字)
 const (
-	Common  AppCode = 10
-	Admin   AppCode = 11
-	OpenAPI AppCode = 12
+	Common    AppCode = 10
+	Admin     AppCode = 11
+	OpenAPI   AppCode = 12
+	HWAdmin   AppCode = 21
+	HWOpenAPI AppCode = 22
 )
