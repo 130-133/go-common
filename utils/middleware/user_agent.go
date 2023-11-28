@@ -14,10 +14,8 @@ func UserAgentFun(next http.HandlerFunc) http.HandlerFunc {
 		ctx = header.ExtractUA(r.Header).WithContext(ctx)
 		//提取IP 配合 GetIPFromCtx使用
 		ctx = header.ExtractIP(r).WithContext(ctx)
-		//提取MINICODE标记 配合 GetMiniCodeFromCtx使用
-		ctx = header.ExtractMiniCode(r.Header).WithContext(ctx)
-		//提取MINIWORLD标记 配合 GetMiniWorldFromCtx使用
-		ctx = header.ExtractMiniWorld(r.Header).WithContext(ctx)
+		//提取CODE标记 配合 GetCodeFromCtx使用
+		ctx = header.ExtractCode(r.Header).WithContext(ctx)
 		req := r.WithContext(ctx)
 		next(w, req)
 	}

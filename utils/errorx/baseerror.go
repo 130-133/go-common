@@ -1,44 +1,46 @@
 package errorx
 
 import (
+	"errors"
 	"fmt"
+	"gitea.com/llm-PhotoMagic/go-common/utils/i18n"
 	"net/http"
 	"regexp"
-	"runtime/debug"
 	"strconv"
 	"strings"
 
-	"github.com/nicksnyder/go-i18n/v2/i18n"
+	//"github.com/nicksnyder/go-i18n/v2/i18n"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"gitea.com/llm-PhotoMagic/go-common/utils/help"
 )
 
-var global *tyyError
+const UnknownMsgKey = "server.error"
+
+var global *TyyError
 
 type TyyErrorResponse struct {
 	Code int    `json:"code"`
 	Msg  string `json:"message"`
 }
 
-type tyyError struct {
+type TyyError struct {
 	SystemCode AppCode
 	ErrMsgMap  map[int]string
 	UnknownMsg string
-	I18n       *I18n
 }
 
-type ErrOpt func(*tyyError)
+type ErrOpt func(*TyyError)
 
-func (o ErrOpt) Apply(e *tyyError) {
+func (o ErrOpt) Apply(e *TyyError) {
 	o(e)
 }
 
 func Init(appCode AppCode, opts ...ErrOpt) {
-	global = &tyyError{
+	global = &TyyError{
 		SystemCode: appCode,
-		UnknownMsg: "服务器开小差了，请稍后再试",
+		UnknownMsg: "server error please try later",
 	}
 	for _, opt := range opts {
 		opt(global)
@@ -47,33 +49,33 @@ func Init(appCode AppCode, opts ...ErrOpt) {
 
 // WithErrMsgMap 设置全局映射错误码信息
 func WithErrMsgMap(data map[int]string) ErrOpt {
-	return func(e *tyyError) {
+	return func(e *TyyError) {
 		e.ErrMsgMap = data
 	}
 }
 
 // WithLocalize 设置国际化
-func WithLocalize(data map[int]*i18n.Message, i18nFile []string, lang string) ErrOpt {
-	return func(e *tyyError) {
-		e.I18n = NewI18n(data, i18nFile, lang)
-		e.I18n.UnknownMsg = e.UnknownMsg
-	}
-}
+//func WithLocalize() ErrOpt {
+//	return func(e *TyyError) {
+//		//e.I18n = NewI18n(data, i18nFile, lang)
+//		//e.I18n.UnknownMsg = e.UnknownMsg
+//	}
+//}
 
 // WithUnknownMsg 设置默认未定义错误信息
 func WithUnknownMsg(msg string) ErrOpt {
-	return func(e *tyyError) {
+	return func(e *TyyError) {
 		e.UnknownMsg = msg
-		if e.I18n != nil {
-			e.I18n.UnknownMsg = msg
-		}
+		//if e.I18n != nil {
+		//	e.I18n.UnknownMsg = msg
+		//}
 	}
 }
 
-func (e tyyError) GetMsg(code int) string {
-	if e.I18n != nil {
-		return e.I18n.Msg(code)
-	}
+func (e TyyError) GetMsg(code int) string {
+	//if e.I18n != nil {
+	//	return e.I18n.Tfd(code, nil)
+	//}
 	msg, ok := e.ErrMsgMap[code]
 	if !ok {
 		msg = e.UnknownMsg
@@ -86,9 +88,10 @@ type TyyCodeError struct {
 	ErrMessage  string         //错误信息
 	ErrCategory CategoryCode   //分类
 	ErrCode     int            //7位错误码
+	I18n        *i18n.I18n     // 国际化
 }
 
-func GetGlobal() *tyyError {
+func GetGlobal() *TyyError {
 	if global == nil {
 		Init(99)
 	}
@@ -99,67 +102,71 @@ func formatCodeMessage(msg string, code int) string {
 	return fmt.Sprintf("%s code:%d", msg, code)
 }
 
-func NewError(category CategoryCode, code int, msg string) error {
+func NewError(category CategoryCode, code int, msg, lang string) error {
 	if code < 1000 {
 		codeStr := fmt.Sprintf("%02d%02d%03d", GetGlobal().SystemCode, category, code)
 		code, _ = strconv.Atoi(codeStr)
 	}
 	statusCode := ToStatusCode(category)
+	in := i18n.NewI18n()
+	in.SetLanguage(lang)
 	return &TyyCodeError{
 		GrpcStatus:  status.New(statusCode, formatCodeMessage(msg, code)),
-		ErrMessage:  msg,
+		ErrMessage:  in.Tfd(msg, nil),
 		ErrCategory: category,
 		ErrCode:     code,
+		I18n:        in,
 	}
 }
-func NewSystemCodeError(code int) error {
-	return NewError(SystemError, code, global.GetMsg(code))
+
+func NewSystemCodeError(code int, lang string) error {
+	return NewError(SystemError, code, global.GetMsg(code), lang)
 }
-func NewParamCodeError(code int) error {
-	return NewError(ParamError, code, global.GetMsg(code))
+func NewParamCodeError(code int, lang string) error {
+	return NewError(ParamError, code, global.GetMsg(code), lang)
 }
-func NewGetDataCodeError(code int) error {
-	return NewError(GetDataError, code, global.GetMsg(code))
+func NewGetDataCodeError(code int, lang string) error {
+	return NewError(GetDataError, code, global.GetMsg(code), lang)
 }
-func NewCacheCodeError(code int) error {
-	return NewError(CacheError, code, global.GetMsg(code))
+func NewCacheCodeError(code int, lang string) error {
+	return NewError(CacheError, code, global.GetMsg(code), lang)
 }
-func NewDbCodeError(code int) error {
-	return NewError(DbError, code, global.GetMsg(code))
+func NewDbCodeError(code int, lang string) error {
+	return NewError(DbError, code, global.GetMsg(code), lang)
 }
-func NewMqCodeError(code int) error {
-	return NewError(MqError, code, global.GetMsg(code))
+func NewMqCodeError(code int, lang string) error {
+	return NewError(MqError, code, global.GetMsg(code), lang)
 }
-func NewHttpCodeError(code int) error {
-	return NewError(HttpError, code, global.GetMsg(code))
+func NewHttpCodeError(code int, lang string) error {
+	return NewError(HttpError, code, global.GetMsg(code), lang)
 }
-func NewRpcCodeError(code int) error {
-	return NewError(RpcError, code, global.GetMsg(code))
+func NewRpcCodeError(code int, lang string) error {
+	return NewError(RpcError, code, global.GetMsg(code), lang)
 }
 
-func NewSystemError(msg string, code int) error {
-	return NewError(SystemError, code, msg)
+func NewSystemError(msg string, code int, lang string) error {
+	return NewError(SystemError, code, msg, lang)
 }
-func NewParamError(msg string, code int) error {
-	return NewError(ParamError, code, msg)
+func NewParamError(msg string, code int, lang string) error {
+	return NewError(ParamError, code, msg, lang)
 }
-func NewGetDataError(msg string, code int) error {
-	return NewError(GetDataError, code, msg)
+func NewGetDataError(msg string, code int, lang string) error {
+	return NewError(GetDataError, code, msg, lang)
 }
-func NewCacheError(msg string, code int) error {
-	return NewError(CacheError, code, msg)
+func NewCacheError(msg string, code int, lang string) error {
+	return NewError(CacheError, code, msg, lang)
 }
-func NewDbError(msg string, code int) error {
-	return NewError(DbError, code, msg)
+func NewDbError(msg string, code int, lang string) error {
+	return NewError(DbError, code, msg, lang)
 }
-func NewMqError(msg string, code int) error {
-	return NewError(MqError, code, msg)
+func NewMqError(msg string, code int, lang string) error {
+	return NewError(MqError, code, msg, lang)
 }
-func NewHttpError(msg string, code int) error {
-	return NewError(HttpError, code, msg)
+func NewHttpError(msg string, code int, lang string) error {
+	return NewError(HttpError, code, msg, lang)
 }
-func NewRpcError(msg string, code int) error {
-	return NewError(RpcError, code, msg)
+func NewRpcError(msg string, code int, lang string) error {
+	return NewError(RpcError, code, msg, lang)
 }
 
 // Error 默认输出message带code
@@ -241,7 +248,8 @@ func ParseErr(err error) *TyyCodeError {
 	if err == nil {
 		return nil
 	}
-	if result, ok := err.(*TyyCodeError); ok {
+	var result *TyyCodeError
+	if errors.As(err, &result) {
 		return result
 	}
 	msg := err.Error()
@@ -251,7 +259,8 @@ func ParseErr(err error) *TyyCodeError {
 		regex, _ = regexp.Compile(`desc = ([\s\S]*) code:(\d+)$`)
 	}
 	match := regex.FindStringSubmatch(msg)
-	result := NewSystemError(msg, 0).(*TyyCodeError)
+	//var result *TyyCodeError
+	errors.As(NewSystemError(msg, 0, "en"), &result)
 	if len(match) != 3 {
 		return result
 	}
@@ -268,13 +277,14 @@ func ParseErr(err error) *TyyCodeError {
 	if cErr != nil {
 		return nil
 	}
-	return NewError(CategoryCode(categoryCode), errCode, sliceMsg).(*TyyCodeError)
+	return NewError(CategoryCode(categoryCode), errCode, sliceMsg, "en").(*TyyCodeError)
 }
 
-// HttpxHandler gozero的http异常处理
+// HttpxHandler go-zero的http异常处理
 func HttpxHandler(err error) (int, interface{}) {
-	switch e := err.(type) {
-	case *TyyCodeError:
+	var e *TyyCodeError
+	switch {
+	case errors.As(err, &e):
 		return http.StatusOK, HttpxErrMsgShow(e)
 	default:
 		tyyErr := ParseErr(err)
@@ -282,13 +292,8 @@ func HttpxHandler(err error) (int, interface{}) {
 			return http.StatusOK, HttpxErrMsgShow(tyyErr)
 		}
 	}
-
-	fmt.Errorf("SetErrorHandler Err:%s Stack:%s", err.Error(), debug.Stack())
-
-	initErr := NewSystemError(global.GetMsg(-1), 0).(*TyyCodeError)
-	if global.I18n != nil {
-		initErr = NewSystemError(global.I18n.Msg(-1), 0).(*TyyCodeError)
-	}
+	var initErr *TyyCodeError
+	errors.As(NewSystemError(global.GetMsg(-1), 0, "en"), &initErr)
 	return http.StatusInternalServerError, initErr.Data()
 }
 
@@ -301,8 +306,8 @@ func HttpxErrMsgShow(err *TyyCodeError) *TyyErrorResponse {
 	switch err.ErrCategory {
 	case SystemError, DbError, MqError, HttpError, RpcError, GetDataError, CacheError:
 		result.Msg = global.GetMsg(-1)
-		if global.I18n != nil {
-			result.Msg = global.I18n.Msg(-1)
+		if err.I18n != nil {
+			result.Msg = err.I18n.Tfd(UnknownMsgKey, nil)
 		}
 	}
 	return result

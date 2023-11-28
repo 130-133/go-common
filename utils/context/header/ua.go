@@ -5,12 +5,13 @@ import (
 	"net/http"
 )
 
-const CtxUaKey = "mini-ua"
+const CtxUaKey = "ua"
 
 type UserAgent struct {
 	UA       string   `json:"ua"`
 	Browser  Browser  `json:"browser"`
 	Platform Platform `json:"platform"`
+	Language string   `json:"language"`
 }
 
 func ExtractUA(h http.Header) UserAgent {
@@ -19,6 +20,7 @@ func ExtractUA(h http.Header) UserAgent {
 		UA:       useragent,
 		Browser:  ExtractBrowser(useragent),
 		Platform: ExtractPlatform(useragent),
+		Language: h.Get("User-Language"),
 	}
 }
 

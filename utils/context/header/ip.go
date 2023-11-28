@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-const CtxIPKey = "mini-ip"
+const CtxIPKey = "ip"
 
 type ClientIP struct {
 	net.IP

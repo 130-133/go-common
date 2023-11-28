@@ -9,20 +9,19 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-const CtxMiniCodeKey = "mini-code"
+const CtxCodeKey = "code"
 
-type MiniCode struct {
-	Version       string `json:"x-minicode-version"`
-	Channel       string `json:"x-minicode-channel"`
-	SensorsDataOs string `json:"x-minicode-sensorsdata-os"`
-	Platform      string `json:"x-minicode-platform"`
-	SystemVersion string `json:"x-minicode-systemversion"`
-	Brand         string `json:"x-minicode-brand"`
-	Supplier      string `json:"x-minicode-supplier"`
+type Code struct {
+	Version       string `json:"x-version"`
+	Channel       string `json:"x-channel"`
+	Platform      string `json:"x-platform"`
+	SystemVersion string `json:"x-systemVersion"`
+	Brand         string `json:"x-brand"`
+	Supplier      string `json:"x-supplier"`
 }
 
-func ExtractMiniCode(h http.Header) MiniCode {
-	m := MiniCode{}
+func ExtractCode(h http.Header) Code {
+	m := Code{}
 	mType := reflect.TypeOf(m)
 	mValue := reflect.ValueOf(&m)
 	for i := 0; i < mType.NumField(); i++ {
@@ -33,19 +32,19 @@ func ExtractMiniCode(h http.Header) MiniCode {
 	return m
 }
 
-// GetMiniCodeFromCtx 获取平台标识
-func GetMiniCodeFromCtx(ctx context.Context) MiniCode {
-	if m, ok := ctx.Value(CtxMiniCodeKey).(MiniCode); ok {
+// GetCodeFromCtx 获取平台标识
+func GetCodeFromCtx(ctx context.Context) Code {
+	if m, ok := ctx.Value(CtxCodeKey).(Code); ok {
 		return m
 	}
-	return MiniCode{}
+	return Code{}
 }
 
-func (m MiniCode) WithContext(ctx context.Context) context.Context {
-	return context.WithValue(ctx, CtxMiniCodeKey, m)
+func (m Code) WithContext(ctx context.Context) context.Context {
+	return context.WithValue(ctx, CtxCodeKey, m)
 }
 
-func (m MiniCode) InjectMetaData() metadata.MD {
+func (m Code) InjectMetaData() metadata.MD {
 	tmp, _ := json.Marshal(m)
 	data := make(map[string]string)
 	_ = json.Unmarshal(tmp, &data)

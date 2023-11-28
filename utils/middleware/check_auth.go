@@ -101,15 +101,17 @@ func (a AuthKeys) GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc {
 		)
 		//先获取head中是否存在Authorization
 		hAuthorization := r.Header.Get("Authorization")
+		lang := r.Header.Get("User-Language")
 		if hAuthorization != "" {
 			id, name, err = authorizationFun(a, hAuthorization)
 		}
 		if hAuthorization == "" || err != nil {
-			data := errorx.NewSystemError("登录状态已失效、请重新登录", 0).(*errorx.TyyCodeError).Data()
+			//forbidden
+			data := errorx.NewSystemError("system.unauthorized", 0, lang).(*errorx.TyyCodeError).Data()
 			body, _ := json.Marshal(data)
 			w.Header().Set(httpx.ContentType, httpx.JsonContentType)
 			w.WriteHeader(http.StatusUnauthorized)
-			w.Write(body)
+			_, _ = w.Write(body)
 			return
 		}
 		ctx := context.WithValue(r.Context(), "id", id)
@@ -186,7 +188,7 @@ func authorizationFun(authKeys AuthKeys, authorization string) (id, name string,
 }
 
 func (a AuthKeys) errOutput(w http.ResponseWriter) {
-	data := errorx.NewSystemError("登录状态已失效、请重新登录", 0).(*errorx.TyyCodeError).Data()
+	data := errorx.NewSystemError("system.unauthorized", 0, "en").(*errorx.TyyCodeError).Data()
 	body, _ := json.Marshal(data)
 	w.Header().Set(httpx.ContentType, httpx.JsonContentType)
 	w.WriteHeader(http.StatusUnauthorized)
