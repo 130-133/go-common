@@ -1,7 +1,6 @@
 package header
 
 import (
-	"context"
 	"strings"
 )
 
@@ -30,12 +29,12 @@ func ExtractBrowser(useragent string) Browser {
 }
 
 // GetBrowserFromCtx 获取浏览器标识
-func GetBrowserFromCtx(ctx context.Context) Browser {
-	if u, ok := ctx.Value(CtxUaKey).(UserAgent); ok {
-		return u.Browser
-	}
-	return Browser(0)
-}
+//func GetBrowserFromCtx(ctx context.Context) Browser {
+//	if u, ok := ctx.Value(CtxUaKey).(UserAgent); ok {
+//		return u.Browser
+//	}
+//	return Browser(0)
+//}
 
 func (b Browser) IsWechat() bool {
 	return b == Wechat

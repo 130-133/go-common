@@ -11,13 +11,13 @@ import (
 	"github.com/zeromicro/go-zero/rest/httpx"
 
 	"gitea.com/llm-PhotoMagic/go-common/utils/context/auth"
+	"gitea.com/llm-PhotoMagic/go-common/utils/context/header"
 	"gitea.com/llm-PhotoMagic/go-common/utils/encrypt"
 	"gitea.com/llm-PhotoMagic/go-common/utils/errorx"
 	"gitea.com/llm-PhotoMagic/go-common/utils/help"
 )
 
 type IAuth interface {
-	GetCheckNormalFun(next http.HandlerFunc, expire time.Duration) http.HandlerFunc
 	GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc
 }
 
@@ -25,6 +25,7 @@ type AuthKeys struct {
 	JwtSecret string
 	//AuthSecret  string
 	OnlyExtract bool //纯提取可能存在的token，不校验
+	DefaultLang string
 }
 
 type AuthOpt func(*AuthKeys)
@@ -37,7 +38,8 @@ func (a AuthOpt) Apply(keys *AuthKeys) {
 func Auth(opts ...AuthOpt) IAuth {
 	//默认测试环境密钥
 	a := AuthKeys{
-		JwtSecret: "ecb0babf0687c6a7427e225f5a29b2ef",
+		JwtSecret:   "ecb0babf0687c6a7427e225f5a29b2ef",
+		DefaultLang: "en",
 		//AuthSecret: "c8c93222583741bd828579b3d3efd43b_1",
 	}
 	for _, opt := range opts {
@@ -58,39 +60,45 @@ func WithJwtSecret(secret string) AuthOpt {
 	}
 }
 
+func WithLang(lang string) AuthOpt {
+	return func(keys *AuthKeys) {
+		keys.DefaultLang = lang
+	}
+}
+
 func OnlyExtract() AuthOpt {
 	return func(keys *AuthKeys) {
 		keys.OnlyExtract = true
 	}
 }
 
-func (a AuthKeys) GetCheckNormalFun(next http.HandlerFunc, expire time.Duration) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		//先获取head中是否存在Authorization
-		hAuthorization := r.Header.Get("Authorization")
-		split := strings.SplitN(hAuthorization, "Bearer ", 2)
-		authorization := hAuthorization
-		if len(split) > 1 {
-			authorization = split[1]
-		}
-		en := encrypt.NewJwt(encrypt.JwtConfig{
-			Token: a.JwtSecret,
-		}).Decode(authorization)
-		if !a.OnlyExtract && !en.Verify() {
-			a.errOutput(w)
-			return
-		}
-		data := en.Data()
-
-		ctx := auth.InjectJwt(r.Context(), data)
-		//ctx, _ = help.SetUinToMetadataCtx(ctx, id)
-		if a.CheckAuthExpire(ctx, expire) {
-			a.errOutput(w)
-			return
-		}
-		next(w, r.WithContext(ctx))
-	}
-}
+//func (a AuthKeys) GetCheckNormalFun(next http.HandlerFunc, expire time.Duration) http.HandlerFunc {
+//	return func(w http.ResponseWriter, r *http.Request) {
+//		//先获取head中是否存在Authorization
+//		hAuthorization := r.Header.Get("Authorization")
+//		split := strings.SplitN(hAuthorization, "Bearer ", 2)
+//		authorization := hAuthorization
+//		if len(split) > 1 {
+//			authorization = split[1]
+//		}
+//		en := encrypt.NewJwt(encrypt.JwtConfig{
+//			Token: a.JwtSecret,
+//		}).Decode(authorization)
+//		if !a.OnlyExtract && !en.Verify() {
+//			a.errOutput(w)
+//			return
+//		}
+//		data := en.Data()
+//
+//		ctx := auth.InjectJwt(r.Context(), data)
+//		//ctx, _ = help.SetUinToMetadataCtx(ctx, id)
+//		if a.CheckAuthExpire(ctx, expire) {
+//			a.errOutput(w)
+//			return
+//		}
+//		next(w, r.WithContext(ctx))
+//	}
+//}
 
 func (a AuthKeys) GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -98,10 +106,14 @@ func (a AuthKeys) GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc {
 			id   string
 			name string
 			err  error
+			lang string
 		)
 		//先获取head中是否存在Authorization
 		hAuthorization := r.Header.Get("Authorization")
-		lang := r.Header.Get("User-Language")
+		lang = header.GetLangFromCtx(r.Context())
+		if lang == "" {
+			lang = a.DefaultLang
+		}
 		if hAuthorization != "" {
 			id, name, err = authorizationFun(a, hAuthorization)
 		}
@@ -187,10 +199,10 @@ func authorizationFun(authKeys AuthKeys, authorization string) (id, name string,
 	return
 }
 
-func (a AuthKeys) errOutput(w http.ResponseWriter) {
-	data := errorx.NewSystemError("system.unauthorized", 0, "en").(*errorx.TyyCodeError).Data()
-	body, _ := json.Marshal(data)
-	w.Header().Set(httpx.ContentType, httpx.JsonContentType)
-	w.WriteHeader(http.StatusUnauthorized)
-	w.Write(body)
-}
+//func (a AuthKeys) errOutput(w http.ResponseWriter) {
+//	data := errorx.NewSystemError("system.unauthorized", 0, "en").(*errorx.TyyCodeError).Data()
+//	body, _ := json.Marshal(data)
+//	w.Header().Set(httpx.ContentType, httpx.JsonContentType)
+//	w.WriteHeader(http.StatusUnauthorized)
+//	w.Write(body)
+//}
