@@ -118,8 +118,7 @@ func (a AuthKeys) GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc {
 			id, name, err = authorizationFun(a, hAuthorization)
 		}
 		if hAuthorization == "" || err != nil {
-			//forbidden
-			data := errorx.NewSystemError("system.unauthorized", 0, lang).(*errorx.TyyCodeError).Data()
+			data := errorx.NewSystemError(r.Context(), "system.unauthorized", 0).(*errorx.TyyCodeError).Data()
 			body, _ := json.Marshal(data)
 			w.Header().Set(httpx.ContentType, httpx.JsonContentType)
 			w.WriteHeader(http.StatusUnauthorized)
