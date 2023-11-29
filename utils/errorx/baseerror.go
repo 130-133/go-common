@@ -1,8 +1,10 @@
 package errorx
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"gitea.com/llm-PhotoMagic/go-common/utils/context/header"
 	"gitea.com/llm-PhotoMagic/go-common/utils/i18n"
 	"net/http"
 	"regexp"
@@ -57,7 +59,7 @@ func WithErrMsgMap(data map[int]string) ErrOpt {
 // WithLocalize 设置国际化
 //func WithLocalize() ErrOpt {
 //	return func(e *TyyError) {
-//		//e.I18n = NewI18n(data, i18nFile, lang)
+//		//e.I18n = NewI18n(data, i18nFile)
 //		//e.I18n.UnknownMsg = e.UnknownMsg
 //	}
 //}
@@ -102,10 +104,14 @@ func formatCodeMessage(msg string, code int) string {
 	return fmt.Sprintf("%s code:%d", msg, code)
 }
 
-func NewError(category CategoryCode, code int, msg, lang string) error {
+func NewError(ctx context.Context, category CategoryCode, code int, msg string) error {
 	if code < 1000 {
 		codeStr := fmt.Sprintf("%02d%02d%03d", GetGlobal().SystemCode, category, code)
 		code, _ = strconv.Atoi(codeStr)
+	}
+	lang := header.GetLangFromCtx(ctx)
+	if lang == "" {
+		lang = "en"
 	}
 	statusCode := ToStatusCode(category)
 	in := i18n.NewI18n()
@@ -119,54 +125,60 @@ func NewError(category CategoryCode, code int, msg, lang string) error {
 	}
 }
 
-func NewSystemCodeError(code int, lang string) error {
-	return NewError(SystemError, code, global.GetMsg(code), lang)
+func NewSystemCodeError(ctx context.Context, code int) error {
+	return NewError(ctx, SystemError, code, global.GetMsg(code))
 }
-func NewParamCodeError(code int, lang string) error {
-	return NewError(ParamError, code, global.GetMsg(code), lang)
+func NewParamCodeError(ctx context.Context, code int) error {
+	return NewError(ctx, ParamError, code, global.GetMsg(code))
 }
-func NewGetDataCodeError(code int, lang string) error {
-	return NewError(GetDataError, code, global.GetMsg(code), lang)
+func NewBusinessCodeError(ctx context.Context, code int) error {
+	return NewError(ctx, BusinessError, code, global.GetMsg(code))
 }
-func NewCacheCodeError(code int, lang string) error {
-	return NewError(CacheError, code, global.GetMsg(code), lang)
+func NewGetDataCodeError(ctx context.Context, code int) error {
+	return NewError(ctx, GetDataError, code, global.GetMsg(code))
 }
-func NewDbCodeError(code int, lang string) error {
-	return NewError(DbError, code, global.GetMsg(code), lang)
+func NewCacheCodeError(ctx context.Context, code int) error {
+	return NewError(ctx, CacheError, code, global.GetMsg(code))
 }
-func NewMqCodeError(code int, lang string) error {
-	return NewError(MqError, code, global.GetMsg(code), lang)
+func NewDbCodeError(ctx context.Context, code int) error {
+	return NewError(ctx, DbError, code, global.GetMsg(code))
 }
-func NewHttpCodeError(code int, lang string) error {
-	return NewError(HttpError, code, global.GetMsg(code), lang)
+func NewMqCodeError(ctx context.Context, code int) error {
+	return NewError(ctx, MqError, code, global.GetMsg(code))
 }
-func NewRpcCodeError(code int, lang string) error {
-	return NewError(RpcError, code, global.GetMsg(code), lang)
+func NewHttpCodeError(ctx context.Context, code int) error {
+	return NewError(ctx, HttpError, code, global.GetMsg(code))
+}
+func NewRpcCodeError(ctx context.Context, code int) error {
+	return NewError(ctx, RpcError, code, global.GetMsg(code))
 }
 
-func NewSystemError(msg string, code int, lang string) error {
-	return NewError(SystemError, code, msg, lang)
+func NewSystemError(ctx context.Context, msg string, code int) error {
+	return NewError(ctx, SystemError, code, msg)
 }
-func NewParamError(msg string, code int, lang string) error {
-	return NewError(ParamError, code, msg, lang)
+func NewParamError(ctx context.Context, msg string, code int) error {
+	return NewError(ctx, ParamError, code, msg)
 }
-func NewGetDataError(msg string, code int, lang string) error {
-	return NewError(GetDataError, code, msg, lang)
+func NewBusinessError(ctx context.Context, msg string, code int) error {
+	return NewError(ctx, BusinessError, code, msg)
 }
-func NewCacheError(msg string, code int, lang string) error {
-	return NewError(CacheError, code, msg, lang)
+func NewGetDataError(ctx context.Context, msg string, code int) error {
+	return NewError(ctx, GetDataError, code, msg)
 }
-func NewDbError(msg string, code int, lang string) error {
-	return NewError(DbError, code, msg, lang)
+func NewCacheError(ctx context.Context, msg string, code int) error {
+	return NewError(ctx, CacheError, code, msg)
 }
-func NewMqError(msg string, code int, lang string) error {
-	return NewError(MqError, code, msg, lang)
+func NewDbError(ctx context.Context, msg string, code int) error {
+	return NewError(ctx, DbError, code, msg)
 }
-func NewHttpError(msg string, code int, lang string) error {
-	return NewError(HttpError, code, msg, lang)
+func NewMqError(ctx context.Context, msg string, code int) error {
+	return NewError(ctx, MqError, code, msg)
 }
-func NewRpcError(msg string, code int, lang string) error {
-	return NewError(RpcError, code, msg, lang)
+func NewHttpError(ctx context.Context, msg string, code int) error {
+	return NewError(ctx, HttpError, code, msg)
+}
+func NewRpcError(ctx context.Context, msg string, code int) error {
+	return NewError(ctx, RpcError, code, msg)
 }
 
 // Error 默认输出message带code
@@ -252,6 +264,7 @@ func ParseErr(err error) *TyyCodeError {
 	if errors.As(err, &result) {
 		return result
 	}
+	ctx := context.Background()
 	msg := err.Error()
 	regex, _ := regexp.Compile(`([\s\S]*) code:(\d+)$`)
 	if strings.HasPrefix(msg, "rpc error") {
@@ -260,7 +273,7 @@ func ParseErr(err error) *TyyCodeError {
 	}
 	match := regex.FindStringSubmatch(msg)
 	//var result *TyyCodeError
-	errors.As(NewSystemError(msg, 0, "en"), &result)
+	errors.As(NewSystemError(ctx, msg, 0), &result)
 	if len(match) != 3 {
 		return result
 	}
@@ -277,11 +290,12 @@ func ParseErr(err error) *TyyCodeError {
 	if cErr != nil {
 		return nil
 	}
-	return NewError(CategoryCode(categoryCode), errCode, sliceMsg, "en").(*TyyCodeError)
+	return NewError(ctx, CategoryCode(categoryCode), errCode, sliceMsg).(*TyyCodeError)
 }
 
 // HttpxHandler go-zero的http异常处理
 func HttpxHandler(err error) (int, interface{}) {
+	ctx := context.Background()
 	var e *TyyCodeError
 	switch {
 	case errors.As(err, &e):
@@ -293,7 +307,7 @@ func HttpxHandler(err error) (int, interface{}) {
 		}
 	}
 	var initErr *TyyCodeError
-	errors.As(NewSystemError(global.GetMsg(-1), 0, "en"), &initErr)
+	errors.As(NewSystemError(ctx, global.GetMsg(-1), 0), &initErr)
 	return http.StatusInternalServerError, initErr.Data()
 }
 
