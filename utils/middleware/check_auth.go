@@ -17,6 +17,8 @@ import (
 	"gitea.com/llm-PhotoMagic/go-common/utils/help"
 )
 
+const UNAUTHORIZED = "server.unauthorized"
+
 type IAuth interface {
 	GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc
 }
@@ -118,7 +120,7 @@ func (a AuthKeys) GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc {
 			id, name, err = authorizationFun(a, hAuthorization)
 		}
 		if hAuthorization == "" || err != nil {
-			data := errorx.NewSystemError(r.Context(), "system.unauthorized", 0).(*errorx.TyyCodeError).Data()
+			data := errorx.NewSystemError(r.Context(), UNAUTHORIZED, 0).(*errorx.TyyCodeError).Data()
 			body, _ := json.Marshal(data)
 			w.Header().Set(httpx.ContentType, httpx.JsonContentType)
 			w.WriteHeader(http.StatusUnauthorized)

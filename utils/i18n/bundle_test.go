@@ -4,7 +4,6 @@ import "testing"
 
 func TestI18n_Msg(t *testing.T) {
 	Init("./lang")
-	n := NewI18n()
-	n.SetLanguage("zh_cn1")
+	n := NewI18n("en")
 	t.Log(n.Tfd("server.error", map[string]interface{}{}))
 }

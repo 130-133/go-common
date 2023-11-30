@@ -3,6 +3,7 @@ package header
 import (
 	"context"
 	"net/http"
+	"strings"
 )
 
 const CtxUaKey = "ua"
@@ -20,7 +21,7 @@ func ExtractUA(h http.Header) UserAgent {
 		UA: useragent,
 		//Browser:  ExtractBrowser(useragent),
 		Platform: ExtractPlatform(useragent),
-		Language: h.Get("User-Language"),
+		Language: strings.ToLower(h.Get("user-language")),
 	}
 }
 

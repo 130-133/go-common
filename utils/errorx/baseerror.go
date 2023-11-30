@@ -114,8 +114,7 @@ func NewError(ctx context.Context, category CategoryCode, code int, msg string) 
 		lang = "en"
 	}
 	statusCode := ToStatusCode(category)
-	in := i18n.NewI18n()
-	in.SetLanguage(lang)
+	in := i18n.NewI18n(lang)
 	return &TyyCodeError{
 		GrpcStatus:  status.New(statusCode, formatCodeMessage(msg, code)),
 		ErrMessage:  in.Tfd(msg, nil),
@@ -294,8 +293,7 @@ func ParseErr(err error) *TyyCodeError {
 }
 
 // HttpxHandler go-zero的http异常处理
-func HttpxHandler(err error) (int, interface{}) {
-	ctx := context.Background()
+func HttpxHandler(ctx context.Context, err error) (int, interface{}) {
 	var e *TyyCodeError
 	switch {
 	case errors.As(err, &e):

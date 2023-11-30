@@ -14,9 +14,12 @@ type I18n struct {
 
 var bundle *i18n.Bundle
 
-func NewI18n() *I18n {
+func NewI18n(lang string) *I18n {
 	ins := &I18n{}
-	ins.SetLanguage("en")
+	if lang == "" {
+		lang = "en"
+	}
+	ins.SetLanguage(lang)
 	return ins
 }
 
