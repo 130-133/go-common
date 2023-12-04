@@ -57,7 +57,7 @@ func (l *ClientLocker) copy() *locker {
 func (l *ClientLocker) WithKey(key string, match ...interface{}) *locker {
 	c := l.copy()
 	c.key = fmt.Sprintf(key, match...)
-	c.value = help.GetRandstring(10)
+	c.value = help.GetRandString(10)
 	return c
 }
 

@@ -72,7 +72,7 @@ func NewRedisConn(opts ...Option) *MRedis {
 		DB:       opt.Db,  // use default DB
 	})
 	if rdb == nil && rdb.Ping().Err() != nil {
-		panic(errorx.NewCacheError("连接Redis失败", 0))
+		panic(errorx.NewCacheError(context.Background(), "连接Redis失败", 0))
 	}
 	return &MRedis{
 		Client: rdb,
