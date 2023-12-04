@@ -4,14 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"gitea.com/llm-PhotoMagic/go-common/utils/context/header"
+	"github.com/zeromicro/go-zero/rest/httpx"
 	"net/http"
 	"strings"
 	"time"
 
-	"github.com/zeromicro/go-zero/rest/httpx"
-
 	"gitea.com/llm-PhotoMagic/go-common/utils/context/auth"
-	"gitea.com/llm-PhotoMagic/go-common/utils/context/header"
 	"gitea.com/llm-PhotoMagic/go-common/utils/encrypt"
 	"gitea.com/llm-PhotoMagic/go-common/utils/errorx"
 	"gitea.com/llm-PhotoMagic/go-common/utils/help"
@@ -119,7 +118,7 @@ func (a AuthKeys) GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc {
 		if hAuthorization != "" {
 			id, name, err = authorizationFun(a, hAuthorization)
 		}
-		if hAuthorization == "" || err != nil {
+		if hAuthorization == "" || err != nil || id == "" || name == "" {
 			data := errorx.NewSystemError(r.Context(), UNAUTHORIZED, 0).(*errorx.TyyCodeError).Data()
 			body, _ := json.Marshal(data)
 			w.Header().Set(httpx.ContentType, httpx.JsonContentType)
@@ -128,8 +127,7 @@ func (a AuthKeys) GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		ctx := context.WithValue(r.Context(), "id", id)
-		ctx, _ = help.SetIDNameToMetadataCtx(ctx, id, name)
-
+		ctx, err = help.SetIDNameToMetadataCtx(ctx, id, name)
 		next(w, r.WithContext(ctx))
 	}
 }
