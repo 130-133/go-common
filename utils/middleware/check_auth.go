@@ -7,6 +7,7 @@ import (
 	"gitea.com/llm-PhotoMagic/go-common/utils/context/header"
 	"github.com/zeromicro/go-zero/rest/httpx"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -104,7 +105,7 @@ func OnlyExtract() AuthOpt {
 func (a AuthKeys) GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
-			id   string
+			id   int64
 			name string
 			err  error
 			lang string
@@ -118,7 +119,7 @@ func (a AuthKeys) GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc {
 		if hAuthorization != "" {
 			id, name, err = authorizationFun(a, hAuthorization)
 		}
-		if hAuthorization == "" || err != nil || id == "" || name == "" {
+		if hAuthorization == "" || err != nil || id == 0 || name == "" {
 			data := errorx.NewSystemError(r.Context(), UNAUTHORIZED, 0).(*errorx.TyyCodeError).Data()
 			body, _ := json.Marshal(data)
 			w.Header().Set(httpx.ContentType, httpx.JsonContentType)
@@ -127,7 +128,7 @@ func (a AuthKeys) GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		ctx := context.WithValue(r.Context(), "id", id)
-		ctx, err = help.SetIDNameToMetadataCtx(ctx, id, name)
+		ctx, err = help.SetIDNameToMetadataCtx(ctx, strconv.FormatInt(id, 10), name)
 		next(w, r.WithContext(ctx))
 	}
 }
@@ -171,7 +172,7 @@ func (a AuthKeys) CheckAuthExpire(ctx context.Context, duration time.Duration) b
 //}
 
 // header 鉴权
-func authorizationFun(authKeys AuthKeys, authorization string) (id, name string, err error) {
+func authorizationFun(authKeys AuthKeys, authorization string) (id int64, name string, err error) {
 	authSplit := strings.SplitN(authorization, " ", 2)
 	if len(authSplit) != 2 {
 		err = errors.New("鉴权参数无效")
@@ -189,7 +190,8 @@ func authorizationFun(authKeys AuthKeys, authorization string) (id, name string,
 			return
 		}
 		data := en.Data()
-		id, _ = data["id"].(string)
+		fid, _ := data["id"].(float64)
+		id = int64(fid)
 		name, _ = data["name"].(string)
 	default:
 		err = errors.New("鉴权失败")

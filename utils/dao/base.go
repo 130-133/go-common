@@ -116,8 +116,8 @@ func (d *BaseDao) WithContext(ctx context.Context) TransactionCtx {
 	}
 }
 
-func (t TransactionCtx) Transaction(fc func(context.Context) error) {
-	t.NewDB().Transaction(func(tx *gorm.DB) error {
+func (t TransactionCtx) Transaction(fc func(context.Context) error) error {
+	return t.NewDB().Transaction(func(tx *gorm.DB) error {
 		ctx := context.WithValue(t.Context, t.txKey, tx)
 		return fc(ctx)
 	})
