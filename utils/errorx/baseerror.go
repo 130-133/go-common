@@ -104,7 +104,7 @@ func formatCodeMessage(msg string, code int) string {
 	return fmt.Sprintf("%s code:%d", msg, code)
 }
 
-func NewError(ctx context.Context, category CategoryCode, code int, msg string) error {
+func NewError(ctx context.Context, category CategoryCode, code int, msg string, val map[string]any) error {
 	if code < 1000 {
 		codeStr := fmt.Sprintf("%02d%02d%03d", GetGlobal().SystemCode, category, code)
 		code, _ = strconv.Atoi(codeStr)
@@ -117,7 +117,7 @@ func NewError(ctx context.Context, category CategoryCode, code int, msg string) 
 	in := i18n.NewI18n(lang)
 	return &TyyCodeError{
 		GrpcStatus:  status.New(statusCode, formatCodeMessage(msg, code)),
-		ErrMessage:  in.Tfd(msg, nil),
+		ErrMessage:  in.Tfd(msg, val),
 		ErrCategory: category,
 		ErrCode:     code,
 		I18n:        in,
@@ -125,59 +125,59 @@ func NewError(ctx context.Context, category CategoryCode, code int, msg string) 
 }
 
 func NewSystemCodeError(ctx context.Context, code int) error {
-	return NewError(ctx, SystemError, code, global.GetMsg(code))
+	return NewError(ctx, SystemError, code, global.GetMsg(code), nil)
 }
 func NewParamCodeError(ctx context.Context, code int) error {
-	return NewError(ctx, ParamError, code, global.GetMsg(code))
+	return NewError(ctx, ParamError, code, global.GetMsg(code), nil)
 }
 func NewBusinessCodeError(ctx context.Context, code int) error {
-	return NewError(ctx, BusinessError, code, global.GetMsg(code))
+	return NewError(ctx, BusinessError, code, global.GetMsg(code), nil)
 }
 func NewGetDataCodeError(ctx context.Context, code int) error {
-	return NewError(ctx, GetDataError, code, global.GetMsg(code))
+	return NewError(ctx, GetDataError, code, global.GetMsg(code), nil)
 }
 func NewCacheCodeError(ctx context.Context, code int) error {
-	return NewError(ctx, CacheError, code, global.GetMsg(code))
+	return NewError(ctx, CacheError, code, global.GetMsg(code), nil)
 }
 func NewDbCodeError(ctx context.Context, code int) error {
-	return NewError(ctx, DbError, code, global.GetMsg(code))
+	return NewError(ctx, DbError, code, global.GetMsg(code), nil)
 }
 func NewMqCodeError(ctx context.Context, code int) error {
-	return NewError(ctx, MqError, code, global.GetMsg(code))
+	return NewError(ctx, MqError, code, global.GetMsg(code), nil)
 }
 func NewHttpCodeError(ctx context.Context, code int) error {
-	return NewError(ctx, HttpError, code, global.GetMsg(code))
+	return NewError(ctx, HttpError, code, global.GetMsg(code), nil)
 }
 func NewRpcCodeError(ctx context.Context, code int) error {
-	return NewError(ctx, RpcError, code, global.GetMsg(code))
+	return NewError(ctx, RpcError, code, global.GetMsg(code), nil)
 }
 
 func NewSystemError(ctx context.Context, msg string, code int) error {
-	return NewError(ctx, SystemError, code, msg)
+	return NewError(ctx, SystemError, code, msg, nil)
 }
 func NewParamError(ctx context.Context, msg string, code int) error {
-	return NewError(ctx, ParamError, code, msg)
+	return NewError(ctx, ParamError, code, msg, nil)
 }
-func NewBusinessError(ctx context.Context, msg string, code int) error {
-	return NewError(ctx, BusinessError, code, msg)
+func NewBusinessError(ctx context.Context, msg string, val map[string]any, code int) error {
+	return NewError(ctx, BusinessError, code, msg, val)
 }
 func NewGetDataError(ctx context.Context, msg string, code int) error {
-	return NewError(ctx, GetDataError, code, msg)
+	return NewError(ctx, GetDataError, code, msg, nil)
 }
 func NewCacheError(ctx context.Context, msg string, code int) error {
-	return NewError(ctx, CacheError, code, msg)
+	return NewError(ctx, CacheError, code, msg, nil)
 }
 func NewDbError(ctx context.Context, msg string, code int) error {
-	return NewError(ctx, DbError, code, msg)
+	return NewError(ctx, DbError, code, msg, nil)
 }
 func NewMqError(ctx context.Context, msg string, code int) error {
-	return NewError(ctx, MqError, code, msg)
+	return NewError(ctx, MqError, code, msg, nil)
 }
 func NewHttpError(ctx context.Context, msg string, code int) error {
-	return NewError(ctx, HttpError, code, msg)
+	return NewError(ctx, HttpError, code, msg, nil)
 }
 func NewRpcError(ctx context.Context, msg string, code int) error {
-	return NewError(ctx, RpcError, code, msg)
+	return NewError(ctx, RpcError, code, msg, nil)
 }
 
 // Error 默认输出message带code
@@ -289,7 +289,7 @@ func ParseErr(err error) *TyyCodeError {
 	if cErr != nil {
 		return nil
 	}
-	return NewError(ctx, CategoryCode(categoryCode), errCode, sliceMsg).(*TyyCodeError)
+	return NewError(ctx, CategoryCode(categoryCode), errCode, sliceMsg, nil).(*TyyCodeError)
 }
 
 // HttpxHandler go-zero的http异常处理

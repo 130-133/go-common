@@ -7,7 +7,6 @@ import (
 	"gitea.com/llm-PhotoMagic/go-common/utils/context/header"
 	"github.com/zeromicro/go-zero/rest/httpx"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
@@ -18,9 +17,16 @@ import (
 )
 
 const UNAUTHORIZED = "server.unauthorized"
+const UserInfoKey = "ctx-user"
 
 type IAuth interface {
 	GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc
+}
+
+type UserInfo struct {
+	ID     int64
+	Name   string
+	AreaID int64
 }
 
 type AuthKeys struct {
@@ -105,8 +111,8 @@ func OnlyExtract() AuthOpt {
 func (a AuthKeys) GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
-			id   int64
-			name string
+			//id   int64
+			//name string
 			err  error
 			lang string
 		)
@@ -116,10 +122,11 @@ func (a AuthKeys) GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc {
 		if lang == "" {
 			lang = a.DefaultLang
 		}
+		user := UserInfo{}
 		if hAuthorization != "" {
-			id, name, err = authorizationFun(a, hAuthorization)
+			err = authorizationFun(a, hAuthorization, &user)
 		}
-		if hAuthorization == "" || err != nil || id == 0 || name == "" {
+		if hAuthorization == "" || err != nil || user.ID == 0 || user.Name == "" {
 			data := errorx.NewSystemError(r.Context(), UNAUTHORIZED, 0).(*errorx.TyyCodeError).Data()
 			body, _ := json.Marshal(data)
 			w.Header().Set(httpx.ContentType, httpx.JsonContentType)
@@ -127,10 +134,24 @@ func (a AuthKeys) GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc {
 			_, _ = w.Write(body)
 			return
 		}
-		ctx := context.WithValue(r.Context(), "id", id)
-		ctx, err = help.SetIDNameToMetadataCtx(ctx, strconv.FormatInt(id, 10), name)
+		ctx := context.WithValue(r.Context(), UserInfoKey, user)
+		//ctx, err = help.SetIDNameToMetadataCtx(ctx, strconv.FormatInt(id, 10), name)
 		next(w, r.WithContext(ctx))
 	}
+}
+
+func GetUserFromCtx(ctx context.Context) (u UserInfo, err error) {
+	user := ctx.Value(UserInfoKey)
+	if user == nil {
+		err = errors.New("ctx user is nil")
+		return
+	}
+	u = user.(UserInfo)
+	if u.ID == 0 {
+		err = errors.New("user id is nil")
+		return
+	}
+	return u, nil
 }
 
 // CheckAuthExpire 校验业务过期
@@ -172,7 +193,7 @@ func (a AuthKeys) CheckAuthExpire(ctx context.Context, duration time.Duration) b
 //}
 
 // header 鉴权
-func authorizationFun(authKeys AuthKeys, authorization string) (id int64, name string, err error) {
+func authorizationFun(authKeys AuthKeys, authorization string, user *UserInfo) (err error) {
 	authSplit := strings.SplitN(authorization, " ", 2)
 	if len(authSplit) != 2 {
 		err = errors.New("鉴权参数无效")
@@ -191,8 +212,11 @@ func authorizationFun(authKeys AuthKeys, authorization string) (id int64, name s
 		}
 		data := en.Data()
 		fid, _ := data["id"].(float64)
-		id = int64(fid)
-		name, _ = data["name"].(string)
+		name, _ := data["name"].(string)
+		areaID, _ := data["areaID"].(float64)
+		user.ID = int64(fid)
+		user.Name = name
+		user.AreaID = int64(areaID)
 	default:
 		err = errors.New("鉴权失败")
 		return

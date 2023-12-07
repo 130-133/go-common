@@ -41,7 +41,7 @@ func Init(path string) {
 	}
 }
 
-func (n *I18n) Tfd(format string, value map[string]interface{}) string {
+func (n *I18n) Tfd(format string, value map[string]any) string {
 	res, err := n.localizer.Localize(&i18n.LocalizeConfig{
 		MessageID:    format,
 		TemplateData: value,
