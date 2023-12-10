@@ -19,7 +19,7 @@ func SuccessResponse(w http.ResponseWriter, resp interface{}) {
 
 	body.Code = 0
 	body.CodeMsg = "Success"
-	body.Message = "成功"
+	body.Message = "Success"
 	body.Data = resp
 
 	httpx.OkJson(w, body)
