@@ -71,8 +71,8 @@ func (e *MEntry) WithTracks(kv ...string) *MEntry {
 	e.body["track_data"] = track
 	return e
 }
-func (e *MEntry) WithUin(data string) *MEntry {
-	e.body["uin"] = data
+func (e *MEntry) WithUid(data int64) *MEntry {
+	e.body["uid"] = data
 	return e
 }
 
@@ -104,9 +104,9 @@ func (e *MEntry) LinePrev(prev int) *MEntry {
 // BeforeOut 最后输出前处理
 func (e *MEntry) beforeOut() *MEntry {
 	// 空时自动提取context里的uin
-	if _, ok := e.body["uin"]; !ok {
-		uin, _ := help.GetUinFromCtx(e.ctx)
-		e.body["uin"] = uin
+	if _, ok := e.body["uid"]; !ok {
+		u, _ := help.GetUserFromCtx(e.ctx)
+		e.body["uid"] = u.ID
 	}
 	if e.err != nil {
 		err := errorx.ParseErr(e.err)

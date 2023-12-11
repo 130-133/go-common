@@ -25,6 +25,14 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+const UserInfoKey = "ctx-user"
+
+type UserInfo struct {
+	ID     int64
+	Name   string
+	AreaID int64
+}
+
 func GetUinFromCtx(ctx context.Context) (uin string, err error) {
 	uinInter := ctx.Value("Uin")
 	if uinInter == nil {
@@ -39,6 +47,20 @@ func GetUinFromCtx(ctx context.Context) (uin string, err error) {
 	}
 
 	return
+}
+
+func GetUserFromCtx(ctx context.Context) (u UserInfo, err error) {
+	user := ctx.Value(UserInfoKey)
+	if user == nil {
+		err = errors.New("ctx user is nil")
+		return
+	}
+	u = user.(UserInfo)
+	if u.ID == 0 {
+		err = errors.New("user id is nil")
+		return
+	}
+	return u, nil
 }
 
 func SetIDNameToMetadataCtx(ctx context.Context, id, name string) (rsCtx context.Context, err error) {

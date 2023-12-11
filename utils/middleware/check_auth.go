@@ -17,16 +17,9 @@ import (
 )
 
 const UNAUTHORIZED = "server.unauthorized"
-const UserInfoKey = "ctx-user"
 
 type IAuth interface {
 	GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc
-}
-
-type UserInfo struct {
-	ID     int64
-	Name   string
-	AreaID int64
 }
 
 type AuthKeys struct {
@@ -122,7 +115,7 @@ func (a AuthKeys) GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc {
 		if lang == "" {
 			lang = a.DefaultLang
 		}
-		user := UserInfo{}
+		user := help.UserInfo{}
 		if hAuthorization != "" {
 			err = authorizationFun(a, hAuthorization, &user)
 		}
@@ -134,19 +127,19 @@ func (a AuthKeys) GetCheckAuthFun(next http.HandlerFunc) http.HandlerFunc {
 			_, _ = w.Write(body)
 			return
 		}
-		ctx := context.WithValue(r.Context(), UserInfoKey, user)
+		ctx := context.WithValue(r.Context(), help.UserInfoKey, user)
 		//ctx, err = help.SetIDNameToMetadataCtx(ctx, strconv.FormatInt(id, 10), name)
 		next(w, r.WithContext(ctx))
 	}
 }
 
-func GetUserFromCtx(ctx context.Context) (u UserInfo, err error) {
-	user := ctx.Value(UserInfoKey)
+func GetUserFromCtx(ctx context.Context) (u help.UserInfo, err error) {
+	user := ctx.Value(help.UserInfoKey)
 	if user == nil {
 		err = errors.New("ctx user is nil")
 		return
 	}
-	u = user.(UserInfo)
+	u = user.(help.UserInfo)
 	if u.ID == 0 {
 		err = errors.New("user id is nil")
 		return
@@ -193,7 +186,7 @@ func (a AuthKeys) CheckAuthExpire(ctx context.Context, duration time.Duration) b
 //}
 
 // header 鉴权
-func authorizationFun(authKeys AuthKeys, authorization string, user *UserInfo) (err error) {
+func authorizationFun(authKeys AuthKeys, authorization string, user *help.UserInfo) (err error) {
 	authSplit := strings.SplitN(authorization, " ", 2)
 	if len(authSplit) != 2 {
 		err = errors.New("鉴权参数无效")

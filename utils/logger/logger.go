@@ -35,13 +35,13 @@ func (l LocalLogger) Warn(msg ...interface{}) {
 }
 
 func (l LocalLogger) Error(msg ...interface{}) {
-	fmt.Fprintf(os.Stderr, "%s.%03d [error] %v\n",
+	_, _ = fmt.Fprintf(os.Stderr, "%s.%03d [error] %v\n",
 		time.Now().Format("2006-01-02 15:04:05"),
 		time.Now().Nanosecond()/1e6, l.TrimSlice(msg...))
 }
 
 func (l LocalLogger) Fatal(msg ...interface{}) {
-	fmt.Fprintf(os.Stderr, "%s.%03d [fatal] %v\n",
+	_, _ = fmt.Fprintf(os.Stderr, "%s.%03d [fatal] %v\n",
 		time.Now().Format("2006-01-02 15:04:05"),
 		time.Now().Nanosecond()/1e6, l.TrimSlice(msg...))
 }

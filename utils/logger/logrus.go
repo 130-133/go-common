@@ -27,18 +27,18 @@ type MLogger struct {
 }
 
 type LogBody struct {
-	Sender    string      `json:"sender"`
-	TraceId   string      `json:"trace_id"`
-	SpanId    string      `json:"span_id"`
-	Level     string      `json:"level"`
-	Code      int         `json:"code"`
-	Line      string      `json:"line"`
-	Msg       string      `json:"msg"`
-	Time      string      `json:"time"`
-	Uin       string      `json:"uin"`
-	Req       interface{} `json:"req"`
-	Resp      interface{} `json:"resp"`
-	TrackData interface{} `json:"track_data"`
+	Sender    string `json:"sender"`
+	TraceId   string `json:"trace_id"`
+	SpanId    string `json:"span_id"`
+	Level     string `json:"level"`
+	Code      int    `json:"code"`
+	Line      string `json:"line"`
+	Msg       string `json:"msg"`
+	Time      string `json:"time"`
+	Uid       int64  `json:"uid"`
+	Req       any    `json:"req"`
+	Resp      any    `json:"resp"`
+	TrackData any    `json:"track_data"`
 }
 
 type Option func(*MLogger)
@@ -158,7 +158,7 @@ func (m *MLogger) Warn(data ...interface{}) {
 func (m *MLogger) Error(data ...interface{}) {
 	m.NewEntry().Error(data...)
 }
-func (m MLogger) Fatal(data ...interface{}) {
+func (m *MLogger) Fatal(data ...interface{}) {
 	m.NewEntry().Fatal(data...)
 }
 
@@ -177,8 +177,8 @@ func (m *MLogger) WithResp(data interface{}) *MEntry {
 func (m *MLogger) WithTrack(data interface{}) *MEntry {
 	return m.NewEntry().WithTrack(data)
 }
-func (m *MLogger) WithUin(data string) *MEntry {
-	return m.NewEntry().WithUin(data)
+func (m *MLogger) WithUid(data int64) *MEntry {
+	return m.NewEntry().WithUid(data)
 }
 func (m *MLogger) WithCtx(ctx context.Context) *MEntry {
 	return m.WithContext(ctx)
@@ -198,7 +198,7 @@ func (m *MLogger) Format(entry *logrus.Entry) ([]byte, error) {
 	req, _ := entry.Data["req"]
 	resp, _ := entry.Data["resp"]
 	errStr, _ := entry.Data["error"].(string)
-	uin, _ := entry.Data["uin"].(string)
+	uid, _ := entry.Data["uid"].(int64)
 	lineStr, _ := entry.Data["line"].(string)
 	trackData, ok := entry.Data["track_data"]
 	if !ok {
@@ -215,7 +215,7 @@ func (m *MLogger) Format(entry *logrus.Entry) ([]byte, error) {
 	data.Code = code
 	data.Req = req
 	data.Resp = resp
-	data.Uin = uin
+	data.Uid = uid
 	data.TrackData = trackData
 	data.Level = entry.Level.String()
 	data.Line = lineStr
