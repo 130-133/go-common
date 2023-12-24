@@ -13,6 +13,7 @@ type UserAgent struct {
 	//Browser  Browser  `json:"browser"`
 	Platform Platform `json:"platform"`
 	Language string   `json:"language"`
+	Country  string   `json:"country"`
 }
 
 func ExtractUA(h http.Header) UserAgent {
@@ -22,6 +23,7 @@ func ExtractUA(h http.Header) UserAgent {
 		//Browser:  ExtractBrowser(useragent),
 		Platform: ExtractPlatform(useragent),
 		Language: strings.ToLower(h.Get("user-language")),
+		Country:  strings.ToLower(h.Get("user-country")),
 	}
 }
 
@@ -42,4 +44,11 @@ func GetLangFromCtx(ctx context.Context) string {
 
 func (u UserAgent) WithContext(ctx context.Context) context.Context {
 	return context.WithValue(ctx, CtxUaKey, u)
+}
+
+func GetCountryFromCtx(ctx context.Context) string {
+	if u, ok := ctx.Value(CtxUaKey).(UserAgent); ok {
+		return u.Country
+	}
+	return ""
 }
