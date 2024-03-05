@@ -10,10 +10,10 @@ import (
 
 	"github.com/zeromicro/go-zero/rest/httpx"
 
-	"gitea.com/llm-PhotoMagic/go-common/utils/context/auth"
-	"gitea.com/llm-PhotoMagic/go-common/utils/encrypt"
-	"gitea.com/llm-PhotoMagic/go-common/utils/errorx"
-	"gitea.com/llm-PhotoMagic/go-common/utils/help"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/context/auth"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/encrypt"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/errorx"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/help"
 )
 
 type IAuth interface {

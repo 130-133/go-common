@@ -5,8 +5,8 @@ import (
 
 	"github.com/hibiken/asynq"
 
-	"gitea.com/llm-PhotoMagic/go-common/utils/logger"
-	"gitea.com/llm-PhotoMagic/go-common/utils/redis"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/logger"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/redis"
 )
 
 type asynqPlugin struct {

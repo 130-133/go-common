@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"gitea.com/llm-PhotoMagic/go-common/utils/help"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/help"
 )
 
 type IParamSign interface {

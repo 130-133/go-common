@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"gitea.com/llm-PhotoMagic/go-common/utils/logger"
-	"gitea.com/llm-PhotoMagic/go-common/utils/rabbitmq"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/logger"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/rabbitmq"
 )
 
 type rabbitmqPlugin struct {

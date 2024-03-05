@@ -5,7 +5,7 @@ import (
 
 	"google.golang.org/grpc/metadata"
 
-	"gitea.com/llm-PhotoMagic/go-common/utils/context/header"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/context/header"
 )
 
 type Metadata struct {

@@ -2,7 +2,7 @@ package wechat
 
 import (
 	"context"
-	"gitea.com/llm-PhotoMagic/go-common/utils/request"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/request"
 )
 
 func SendTemplateMsg(ctx context.Context, token AccessToken, data interface{}) error {

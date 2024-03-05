@@ -1,4 +1,4 @@
-module gitea.com/llm-PhotoMagic/go-common
+module gitlab.darmod.cn/llm-PhotoMagic/go-common
 
 go 1.19
 

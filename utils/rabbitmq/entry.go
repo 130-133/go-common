@@ -15,8 +15,8 @@ import (
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
 
-	"gitea.com/llm-PhotoMagic/go-common/utils/help"
-	"gitea.com/llm-PhotoMagic/go-common/utils/logger"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/help"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/logger"
 )
 
 type Entry struct {

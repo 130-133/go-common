@@ -9,8 +9,8 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"gitea.com/llm-PhotoMagic/go-common/utils/errorx"
-	"gitea.com/llm-PhotoMagic/go-common/utils/help"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/errorx"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/help"
 )
 
 type MEntry struct {

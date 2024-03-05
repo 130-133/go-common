@@ -7,7 +7,7 @@ import (
 
 	"go.uber.org/atomic"
 
-	"gitea.com/llm-PhotoMagic/go-common/utils/help"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/help"
 )
 
 type Client interface {

@@ -7,7 +7,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	"gitea.com/llm-PhotoMagic/go-common/utils/logger"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/logger"
 )
 
 type IGrpcLog interface {
