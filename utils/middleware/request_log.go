@@ -7,8 +7,8 @@ import (
 	"net/url"
 	"strings"
 
-	"gitea.com/llm-PhotoMagic/go-common/utils/help"
-	"gitea.com/llm-PhotoMagic/go-common/utils/logger"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/help"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/logger"
 )
 
 type IHttpLog interface {

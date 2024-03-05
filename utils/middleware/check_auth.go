@@ -4,16 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"gitea.com/llm-PhotoMagic/go-common/utils/context/header"
 	"github.com/zeromicro/go-zero/rest/httpx"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/context/header"
 	"net/http"
 	"strings"
 	"time"
 
-	"gitea.com/llm-PhotoMagic/go-common/utils/context/auth"
-	"gitea.com/llm-PhotoMagic/go-common/utils/encrypt"
-	"gitea.com/llm-PhotoMagic/go-common/utils/errorx"
-	"gitea.com/llm-PhotoMagic/go-common/utils/help"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/context/auth"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/encrypt"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/errorx"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/help"
 )
 
 const UNAUTHORIZED = "server.unauthorized"

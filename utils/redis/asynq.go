@@ -7,7 +7,7 @@ import (
 
 	"github.com/hibiken/asynq"
 
-	"gitea.com/llm-PhotoMagic/go-common/utils/logger"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/logger"
 )
 
 // 接入Asynq实现延时任务，以方便任务的可视化监控

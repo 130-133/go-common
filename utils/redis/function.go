@@ -8,7 +8,7 @@ import (
 	red "github.com/go-redis/redis"
 	"github.com/tidwall/gjson"
 
-	"gitea.com/llm-PhotoMagic/go-common/utils/help"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/help"
 )
 
 type SetFunc func() ([]byte, error)
@@ -98,7 +98,7 @@ Func:
 	return res, nil
 }
 
-//Deprecated
+// Deprecated
 func (r *MRedis) LoadMulitHMSetEx(key string, ttl time.Duration, fc SetFunc) (LoadResult, error) {
 	return r.LoadMultiHMSetEx(key, ttl, fc)
 }

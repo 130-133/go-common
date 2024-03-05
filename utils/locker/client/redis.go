@@ -1,7 +1,7 @@
 package client
 
 import (
-	"gitea.com/llm-PhotoMagic/go-common/utils/redis"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/redis"
 	"time"
 )
 

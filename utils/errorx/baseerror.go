@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"gitea.com/llm-PhotoMagic/go-common/utils/context/header"
-	"gitea.com/llm-PhotoMagic/go-common/utils/i18n"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/context/header"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/i18n"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -15,7 +15,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"gitea.com/llm-PhotoMagic/go-common/utils/help"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/help"
 )
 
 const UnknownMsgKey = "server.error"

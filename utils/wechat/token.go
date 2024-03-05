@@ -3,9 +3,9 @@ package wechat
 import (
 	"context"
 	"fmt"
-	"gitea.com/llm-PhotoMagic/go-common/utils/redis"
-	"gitea.com/llm-PhotoMagic/go-common/utils/request"
 	red "github.com/go-redis/redis"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/redis"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/request"
 	"time"
 )
 

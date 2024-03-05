@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"gitea.com/llm-PhotoMagic/go-common/utils/help"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/help"
 
 	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/otel/trace"

@@ -6,11 +6,11 @@ import (
 
 	"google.golang.org/grpc/metadata"
 
-	"gitea.com/llm-PhotoMagic/go-common/utils/context/header"
+	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/context/header"
 )
 
-func ExtractMiniCode(ctx context.Context) header.MiniCode {
-	m := header.MiniCode{}
+func ExtractMiniCode(ctx context.Context) header.Code {
+	m := header.Code{}
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return m
