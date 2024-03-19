@@ -2,7 +2,7 @@
 
 go公共代码仓库
 
-当前Git服务器没有https，暂时将包命名为gitlab.darmod.cn/llm-PhotoMagic/go-common
+当前Git服务器没有https
 安装该包需修改本地git配置 
 
 >git config --global url."http://gitlab.darmod.cn/".insteadof "https://gitlab.darmod.cn/"
