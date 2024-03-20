@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/130-133/go-common/utils/encrypt"
 	"github.com/tidwall/gjson"
-	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/encrypt"
 )
 
 type AuthInfo struct {

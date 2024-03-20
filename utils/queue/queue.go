@@ -5,10 +5,10 @@ import (
 	"runtime"
 	"runtime/debug"
 
-	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/locker"
-	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/locker/client"
-	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/logger"
-	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/redis"
+	"github.com/130-133/go-common/utils/locker"
+	"github.com/130-133/go-common/utils/locker/client"
+	"github.com/130-133/go-common/utils/logger"
+	"github.com/130-133/go-common/utils/redis"
 )
 
 type BaseQueue struct {

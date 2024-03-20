@@ -21,8 +21,8 @@ import (
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 
-	"gitlab.darmod.cn/llm-PhotoMagic/go-common/config/cfginit"
-	"gitlab.darmod.cn/llm-PhotoMagic/go-common/utils/help"
+	"github.com/130-133/go-common/config/cfginit"
+	"github.com/130-133/go-common/utils/help"
 )
 
 type IRequests interface {
