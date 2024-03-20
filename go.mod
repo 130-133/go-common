@@ -1,4 +1,4 @@
-module gitlab.darmod.cn/llm-PhotoMagic/go-common
+module github.com/130-133/go-common
 
 go 1.19
 
